@@ -1,0 +1,60 @@
+---
+title: "MInt - A package for learning direct interaction networks"
+author: "Surojit Biswas, Meredith M. McDonald, Derek S. Lundberg, Jeffery L. Dangl, and Vladimir Jojic"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{MInt - A package for learning direct interaction networks.}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\usepackage[utf8]{inputenc}
+---
+MInt is a package for learning direct interaction networks. It implements a Poisson-multivariate normal hierarchical model, which models covariates at the Poisson layer and accounts for direct interactions at the multivariate normal layer using an L1 penalized precision matrix. 
+
+## Quick Start
+
+The basic workflow for MInt includes creating a MInt model object with a design matrix and response matrix and then using this object to estimate the parameters of the Poisson-multivariate normal hierarchical model. 
+
+As an example, consider the example data located in the `data` directory of this package. The files `y.txt` and `x.txt` contain a sample response matrix and design matrix, respectively. We'd like to use MInt to find evidence of direct interactions between the variables in the response after controlling for the covariates in the design matrix.
+
+We begin by loading the MInt package and creating a MInt model object:
+
+```{r mint_create, eval=TRUE, results="hide"}
+rm(list = ls()) # Clear workspace
+library(MInt)
+
+# Specify path to the design matrix
+dFile <- system.file("extdata", "x.txt", package="MInt");
+
+# Specify path to the response matrix
+rFile <- system.file("extdata", "y.txt", package="MInt");
+
+
+# Create the MInt model object
+m <- mint(y=rFile, x=dFile, fmla = ~ feature1 + feature2)
+```
+
+The `fmla` argument specifies that `feature1` and `feature2` of the design matrix additively influence each response variable. However, other specifications are possible depeneding on your data. If, for example, you believe there may be an interaction between `feature1` and `feature2`, you may consider passing `fmla = ~ feature1 + feature2 + feature1*feature2`. In general, you can specify any formula you like, just as you could to any R function that accepts formula objects (e.g. `glm`).
+
+To estimate parameters of the model, we simply call:
+
+```{r mint_estimate, eval=TRUE}
+m <- estimate(m)
+```
+
+This will read in the data from the supplied file paths for the response and design matrix, initialize the optimizer, and perform inference. The MInt model object, `m`, has now been updated to include the raw data, optimization details, and parameter estimates. The estimated precision matrix is given by `m$param$P`. The corresponding partial correlation matrix is given by `-cov2cor(m$param$P)`. A non-zero value in entry `(i,j)` of these matrices is indicative of a direct interaction, whereas a zero value suggests variables `i` and `j` do not directly interact.
+
+Let's see how the estimated partial correlation matrix compares to the true one:
+
+``` {r mint_compare, eval=TRUE}
+P_true <- as.matrix( read.csv(system.file("extdata", "P_true.txt", package="MInt"), header=FALSE) );
+
+-cov2cor(P_true)
+-cov2cor(m$param$P)
+```
+
+
+## Contact
+This package is maintained by Surojit Biswas: surojitbiswas@g.harvard.edu
+
+
+
