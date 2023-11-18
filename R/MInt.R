@@ -120,8 +120,14 @@ bootstrap <- function(mfit,nboot=10,seed=1) {
     # Resample
     bsidx <- sample.int(nrow(mfit$data$y), nrow(mfit$data$y), TRUE)
     mfit_copy$data$y <- mfit$data$y[bsidx,];
-    mfit_copy$data$x <- as.matrix(mfit$data$x[bsidx,]);
-    mfit_copy$data$xd <- as.data.frame(mfit$data$xd[bsidx,], row.names=rownames(mfit$data$xd), col.names=colnames(mfit$data$xd));
+    #prova
+    for (rn in colnames(mfit$data$y)) {
+      mfit_copy$data$x[[rn]] <- as.matrix(mfit$data$x[[rn]][bsidx,])
+      mfit_copy$data$xd[[rn]] <- as.data.frame(mfit$data$xd[[rn]][bsidx,], row.names=rownames(mfit$data$xd[[rn]]), col.names=colnames(mfit$data$xd[[rn]]));
+    }
+    #prova
+    #mfit_copy$data$x <- as.matrix(mfit$data$x[bsidx,]);
+    #mfit_copy$data$xd <- as.data.frame(mfit$data$xd[bsidx,], row.names=rownames(mfit$data$xd), col.names=colnames(mfit$data$xd));
     
     # Reinitialize
     mfit_copy <- initialize_optimizer(mfit_copy);
