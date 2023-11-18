@@ -19,3 +19,5 @@ Packaged: 2015-05-17 15:32:02 UTC; sbiswas
 NeedsCompilation: no
 Repository: CRAN
 Date/Publication: 2015-05-18 00:57:24
+RoxygenNote: 7.2.3
+Encoding: UTF-8
