@@ -109,7 +109,7 @@ estimate <- function(mfit) {
 #'   
 #' @return A MInt object.
 #'   
-#'   We should export this at some point.
+#' @export
 bootstrap <- function(mfit,nboot=10,seed=1) {
   
   set.seed(seed);
